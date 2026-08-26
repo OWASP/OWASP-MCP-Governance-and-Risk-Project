@@ -124,10 +124,5 @@ This framework is intended to evolve with the MCP ecosystem. It is maintained as
 
 ---
 
-## License
-
-No `LICENSE` file is in this repository yet. Framework content is provided for organizational governance use; adapt policy language and forms to your environment and legal requirements.
-
----
 
 [Main guide](mcp-governance-risk-framework-v1.0.md) · [Framework mapping](framework-mapping.md) · [Reference links](reference.md)
