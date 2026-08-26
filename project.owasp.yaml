@@ -1,0 +1,20 @@
+audience:
+  - builder
+  - defender
+leaders:
+  - name: Vandana Verma Sehgal
+    email: vandana.verma@owasp.org
+    github: vermava
+level: 2
+name: OWASP MCP Governance & Risk Framework
+pitch: Welcome to the MCP Governance & Risk Framework
+repositories:
+  - name: www-project-mcp-top-10
+    url: https://github.com/OWASP/OWASP-MCP-Governance-and-Risk-Project
+    description: OWASP Foundation web repository
+tags:
+  - mcpgovernance
+  - mcpgovernance&risk
+  - custom-tag-2
+type: documentation
+website: https://owasp.org/OWASP-MCP-Governance-and-Risk-Project
