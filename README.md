@@ -1,12 +1,5 @@
----
-title: MCP Governance & Risk Framework
-layout:  null
-tab: true
-order: 2
-tags: mcpgovernance
----
 
-# 
+# MCP Governance & Risk Framework
 
 A practical governance framework for organizations adopting the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), the open standard that lets AI agents connect to external tools, data sources, and systems.
 
