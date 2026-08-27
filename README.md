@@ -15,7 +15,7 @@ MCP adoption is accelerating across engineering teams. Agents can read wikis, op
 | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | [mcp-governance-risk-framework-v1.0.md](mcp-governance-risk-framework-v1.0.md) | **Main guide (v1.0)**: inventory, classification, risk scoring, governance principles, and rollout guidance      |
 | [framework-mapping.md](framework-mapping.md)                                   | **Framework mapping**: control mappings to OWASP MCP Top 10, OWASP LLM Top 10, NIST AI RMF, ISO 42001, and SOC 2 |
-| [2.Reference.md](reference.md)                                                   | **Reference links**: curated external URLs for MCP security, threat modeling, vendor review, and standards       |
+| [reference.md](reference.md)                                                   | **Reference links**: curated external URLs for MCP security, threat modeling, vendor review, and standards       |
 
 
 ### Framework v1.0 scope
