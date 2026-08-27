@@ -124,9 +124,7 @@ This framework is intended to evolve with the MCP ecosystem. It is maintained as
 
 ---
 
-## License
-
-No `LICENSE` file is in this repository yet. Framework content is provided for organizational governance use; adapt policy language and forms to your environment and legal requirements.
+## **[LICENSE](LICENSE)**
 
 ---
 
