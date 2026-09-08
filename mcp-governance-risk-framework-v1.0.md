@@ -248,13 +248,21 @@ MCP inverts that model. An AI agent selects tools, constructs arguments, and exe
 
 ### **How MCP works in security terms**
 
-The official MCP architecture includes **MCP Host**, **MCP Client**, **MCP Server**, **transport**, **tools**, **resources**, **prompts**, and **notifications**. Governance must cover the full chain, not only the server. A secure server connected through an ungoverned host, client, or transport still creates enterprise risk.
+The official MCP architecture includes **MCP Host**, **MCP Client**, **MCP Server**, **transport**, **tools**, **resources**, **prompts**, **notifications**, and the client-side capabilities a server can invoke: **sampling**, **elicitation**, and **roots**. Governance must cover the full chain, not only the server. A secure server connected through an ungoverned host, client, or transport still creates enterprise risk.
 
 Under the [MCP Specification](https://spec.modelcontextprotocol.io/), each MCP server exposes:
 
 - **Tools**: actions the agent can invoke (create a ticket, send an email, run a query, deploy a service)
 - **Resources**: data the agent can read (files, wiki pages, database records, API responses)
 - **Prompts** (optional): pre-defined templates that shape how the agent interacts with the server
+
+A server can also invoke capabilities in the other direction, against the client and the user. These are negotiated at `initialize` and are not tool calls:
+
+- **Sampling** (optional): the server requests a model generation from the client via `sampling/createMessage`. The server supplies the system prompt and message history, spends the organization's model budget, and may drive a multi-turn tool loop
+- **Elicitation** (optional): the server requests input from the user mid-session via `elicitation/create`, either as an in-band form or, in URL mode, by asking the user to open a server-supplied URL
+- **Roots** (optional): the client advertises filesystem boundaries via `roots/list`. Servers **SHOULD** respect them, so a root is declared scope rather than an enforcement point
+
+Governance that scores only tools misses all three. See [Non-Tool Capability Controls](#non-tool-capability-controls).
 
 The agent, powered by an LLM, decides *which* tools to call, *what* arguments to pass, and *in what order*. That decision-making layer is probabilistic. It does not follow a fixed code path. Two users asking similar questions may trigger different tool chains. A malicious instruction hidden in retrieved content may trigger a tool chain the user never intended.
 
@@ -909,6 +917,7 @@ Every MCP server, regardless of source, tier, or deployment model, must be recor
 | Authentication model    | How the server authenticates                   | OAuth 2.1 with corporate GitHub App (HTTP); local credential handling (STDIO) | Baseline compliance check                               |
 | Data accessed           | Classification of data touched                 | Internal source code (confidential)                                           | Drives tier assignment                                  |
 | Tools / actions exposed | Server-scoped tool identities and capabilities | (`prod-github-repo-read`, `search_repos`) (read)                              | Prevents policy and inventory ambiguity across servers |
+| Non-tool capabilities   | Sampling, elicitation and mode, roots exposed to the server, and resource subscriptions | Sampling: no; elicitation: form only; roots: `file:///srv/checkout` | Captures server-initiated capability that no tool inventory records |
 | Approved configurations | Host or agent configuration IDs and co-resident configured server IDs | `engineering-assistant-v3` with `prod-ticket-write`              | Records the combined trust and capability boundary     |
 | Expected users          | Who will use this server                       | Engineering (200 users)                                                       | Blast radius assessment                                 |
 | Approval status         | Approved / conditional / rejected / unapproved | Conditionally approved                                                        | Governance state                                        |
@@ -1240,6 +1249,16 @@ Approval of each server does not automatically approve every combination. Record
 
 Where the host cannot preserve server-scoped tool identity or enforce policy by configured server ID plus tool name, separate the servers into different configurations or document a compensating control. Do not claim collision prevention or provenance enforcement when the host exposes no such control.
 
+### Rule 7: Classify non-tool capabilities alongside tools
+
+The tier decision tree evaluates data access and write actions, both of which are properties of tools. Sampling and elicitation are neither, so a server can hold a read-only tool set and still act on the user and the model.
+
+- A server that uses **sampling** controls the system prompt and message history sent to the client's model, consumes model budget, and may drive a multi-turn tool loop. Classify it at **Tier 2 minimum**, and at the tier of the tools reachable in that loop where the host allows the server to supply tools
+- A server that uses **elicitation** authors a prompt the user answers inside a trusted client UI. Classify it at **Tier 2 minimum**. URL mode, which exists for credential, payment, and third-party authorization flows, is **Tier 3 minimum**
+- Record the **roots** the host will expose. Widening them is a re-classification trigger under Rule 2
+
+Capabilities are negotiated per session, so a server can begin requesting sampling or elicitation with no configuration change and no new artifact. Record the negotiated capability set in the approval record and treat a change as material.
+
 ---
 
 ## Worked Classification Examples
@@ -1393,6 +1412,8 @@ These gates apply to any server intended for **production or enterprise deployme
 | **No documented scope**                   | Data and action scope not documented before connection                                     | **Reject**       |
 | **No production logging (Tier 2+)**       | Tier 2+ server intended for production without audit logging                               | **Reject**       |
 | **Production credentials on local STDIO** | Local STDIO server configuration contains production API keys, tokens, or service accounts | **Reject**       |
+| **Undeclared capability**                 | Server negotiates sampling, elicitation, or roots access that is absent from the approval record | **Reject**  |
+| **Unmet elicitation client requirements** | Server uses URL mode elicitation and the approved host does not meet the client-side URL requirements in [Non-Tool Capability Controls](#non-tool-capability-controls) | **Reject** |
 
 
 Hard gates are not subject to conditional approval or risk acceptance. Remediation must occur before re-submission.
@@ -1443,6 +1464,8 @@ Use a simple **1–5 score** for each factor. Total scores range from 8 (minimum
 | 4     | Write to production, send communications, trigger deployments |
 | 5     | Delete, admin, IAM changes, financial transactions            |
 
+
+Score sampling and elicitation here as well as tools. A server that can drive the client's model through a tool loop scores at least **3**, and at the score of the most dangerous tool reachable in that loop where the host lets the server supply tools. URL mode elicitation scores at least **4**, because the server directs the user into a credential or payment flow.
 
 **Identity Scope**: What identity does the MCP server operate under?
 
@@ -1742,6 +1765,7 @@ Review cross-server trust separately from read/write chaining. A configuration t
 - [ ] Re-scoring triggered by material changes (new tools, scope expansion)
 - [ ] Critical scores (33–40) escalated to CISO
 - [ ] Tool chaining considered in blast radius and action capability scores
+- [ ] Non-tool capabilities (sampling, elicitation, roots) declared, scored, and recorded in the approval record
 - [ ] Combined server configurations reviewed for name collisions, cross-server metadata instructions, and provenance controls
 
 ---
@@ -1908,6 +1932,47 @@ Run these tests for hosts or clients that aggregate tools from multiple servers.
 
 ---
 
+## Non-Tool Capability Controls
+
+Sampling, elicitation, and roots are server-initiated and produce no `tools/call` record. Apply these controls wherever a server negotiates them.
+
+### Sampling
+
+- **Declared use**: the approval record states whether the server uses sampling, for what purpose, and whether it supplies tools in the request
+- **Human in the loop**: the host presents the request for review before the model runs, and presents the generation before it returns to the server. The specification makes this a **SHOULD** on the client, so verify it in the host rather than assuming it
+- **Rate and cost limits**: cap requests per session and tokens per request, and attribute spend to the configured server ID
+- **Tool loop bounds**: where the host supports server-supplied tools in sampling, cap iterations and apply the same policy to those tool calls as to any other
+
+### Elicitation
+
+- **Declared mode**: the approval record states which modes the server uses. URL mode is Tier 3 minimum
+- **Server attribution**: the host names the requesting server in the prompt, and offers decline and cancel
+- **Form mode**: servers **MUST NOT** request passwords, API keys, tokens, or payment credentials in form mode. Treat any such request as an incident, not a misconfiguration
+- **URL mode client requirements**: the host must not pre-fetch the URL or its metadata, must not open it without explicit user consent, must show the full URL, must open it so that neither the client nor the model can inspect its content or the user's input, and should highlight the domain and warn on Punycode
+- **Rate limiting**: cap elicitation requests per session
+
+### Roots
+
+- **Recorded scope**: the approval record lists the roots exposed to the server
+- **Advisory, not enforced**: servers **SHOULD** respect root boundaries. Where the data warrants enforcement, restrict the server's filesystem access at the process or network boundary rather than relying on the declared roots
+- **Change is a trigger**: `notifications/roots/list_changed` that widens scope is a re-review trigger
+
+### Non-Tool Capability Test Cases
+
+
+| Test                              | Method                                                                                 | Pass criteria                                                                     |
+| --------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **Undeclared sampling**           | Connect with the client `sampling` capability enabled and observe whether the server requests it | No request, or the request matches the approval record                    |
+| **Sampling human in the loop**    | Trigger a `sampling/createMessage` and observe the host                                | Request and generation are both shown for review, and denial is honored           |
+| **Sampling rate limit**           | Trigger repeated sampling requests in one session                                      | Requests are capped and the cap is logged against the configured server ID        |
+| **Form mode secret request**      | Trigger a flow where the server requests credentials in form mode                      | Request is refused, logged, and raised as an incident                             |
+| **URL mode consent**              | Trigger a URL mode elicitation                                                         | Host shows the full URL, requires explicit consent, and does not pre-fetch it      |
+| **Root boundary**                 | Expose a narrow root and request a path outside it                                     | Access fails at an enforcement point, not only by server convention               |
+| **Capability drift**              | Compare the negotiated capability set against the approval record on a schedule        | Any delta moves the server to pending re-review                                   |
+
+
+---
+
 ## Local MCP Hardening Requirements
 
 Apply these requirements to any MCP server running locally, whether it uses stdio or HTTP:
@@ -1974,6 +2039,8 @@ Run the network binding, route authentication, and DNS rebinding tests for every
 Forward these fields to SIEM for Tier 2+ servers (align with [Principle 5](#principle-5-auditability-requires-production-logging)):
 
 - `timestamp`, `user_id`, `agent_session_id`, `mcp_host`, `mcp_server`, `tool_name`, `parameters_redacted`, `outcome`, `authorization_result`, `source_ip`
+
+Server-initiated calls are not tool calls and are lost if only `tool_name` is recorded. Also forward `mcp_method` (for example `tools/call`, `sampling/createMessage`, `elicitation/create`, `roots/list`), `capability`, and `elicitation_mode`, plus the negotiated capability set at session start.
 
 For locally launched servers, also retain `parent_process`, `process_path`, `command_hash`, `artifact_digest`, and `runtime_user` where endpoint telemetry is available. Redact credentials and sensitive argument values before collection.
 
