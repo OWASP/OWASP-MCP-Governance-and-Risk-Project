@@ -201,6 +201,7 @@ These links appear in the [MCP Governance & Risk Framework v1.0](mcp-governance-
 | NIST SP 800-207: Zero Trust Architecture              | [https://csrc.nist.gov/pubs/sp/800/207/final](https://csrc.nist.gov/pubs/sp/800/207/final)                                                                                                           | OWASP AISVS MCP controls                                                                       |
 | ISO/IEC 42001:2023: AI management systems             | [https://www.iso.org/standard/81230.html](https://www.iso.org/standard/81230.html)                                                                                                                   | Formal AI governance programs                                                                  |
 | EU AI Act (official text)                             | [https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689)                                                         | Regulated AI system obligations                                                                |
+| AIUC-1: AI agent security, safety, and reliability standard | [https://aiuc.com/](https://aiuc.com/)                                                                                                                                                         | Six-domain AI agent risk standard; see the [AIUC-1 mapping](framework-mapping.md#aiuc-1) for MCP-specific scoping and explicit gaps |
 
 
 ---
