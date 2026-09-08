@@ -98,6 +98,21 @@ MCP governance intersects with LLM security risks because agents use LLMs to dec
 
 ---
 
+## AIUC-1
+
+AIUC-1 is an external standard covering data & privacy, security, safety, reliability, accountability, and societal risks. This crosswalk is an MCP-specific scoping aid: it does not establish AIUC-1 conformity, certification, or equivalence. Confirm the current AIUC-1 requirements with [AIUC](https://aiuc.com/) and assess controls outside the MCP boundary separately.
+
+| AIUC-1 domain | MCP guide sections | How to apply in an MCP review |
+|---------------|--------------------|-------------------------------|
+| Data & Privacy | [Ch. 4 — Required fields](mcp-governance-risk-framework-v1.0.md#required-fields), [Ch. 6 — The Eight Risk Factors](mcp-governance-risk-framework-v1.0.md#the-eight-risk-factors), [Appendix — Evidence Pack](mcp-governance-risk-framework-v1.0.md#evidence-pack-tier-2-approvals) | Record data classes and destinations for each server and tool; apply minimization and DLP controls; provide sanitized evidence. Model-provider processing, retention, and training-data questions may require a separate AI system or vendor review. |
+| Security | [Ch. 2 — Authorization Design](mcp-governance-risk-framework-v1.0.md#authorization-design), [Ch. 6 — Authorization Hard Gates](mcp-governance-risk-framework-v1.0.md#authorization-hard-gates), [Appendix — Authorization Test Cases](mcp-governance-risk-framework-v1.0.md#authorization-test-cases), [Appendix — Local MCP Hardening](mcp-governance-risk-framework-v1.0.md#local-mcp-hardening-requirements) | Test audience and scope enforcement, reject token passthrough, review network exposure and local-server controls, and retain the results as approval evidence. |
+| Safety | [Ch. 2 — Prompt Injection](mcp-governance-risk-framework-v1.0.md#1-prompt-injection-via-tool-output), [Ch. 3 — Principle 4](mcp-governance-risk-framework-v1.0.md#principle-4-human-approval-must-be-meaningful), [Ch. 6 — Production Hard Gates](mcp-governance-risk-framework-v1.0.md#production-hard-gates) | Evaluate untrusted tool output, consequential actions, and meaningful human approval. Harmful-output evaluation and broader content-safety testing are not defined by this MCP-specific guide and need a separate assessment. |
+| Reliability | [Ch. 4 — Inventory Maintenance](mcp-governance-risk-framework-v1.0.md#inventory-maintenance), [Ch. 6 — Risk Rating Bands](mcp-governance-risk-framework-v1.0.md#risk-rating-bands), [Appendix — Detection and Incident Response](mcp-governance-risk-framework-v1.0.md#detection-and-incident-response) | Track approved versions and changes, score business criticality and reversibility, and test detection, containment, recovery, and re-approval procedures for failed or compromised MCP workflows. |
+| Accountability | [Ch. 1 — Step 4: Assign RACI owners](mcp-governance-risk-framework-v1.0.md#step-4-assign-raci-owners), [Ch. 3 — Principle 1](mcp-governance-risk-framework-v1.0.md#principle-1-no-mcp-without-ownership), [Appendix — Evidence Pack](mcp-governance-risk-framework-v1.0.md#evidence-pack-tier-2-approvals) | Assign a named owner and approvers, document residual-risk decisions, retain evidence, and define escalation and incident-response responsibilities. |
+| Society | [Ch. 3 — Principle 4](mcp-governance-risk-framework-v1.0.md#principle-4-human-approval-must-be-meaningful), [Ch. 6 — Using Scores in Decisions](mcp-governance-risk-framework-v1.0.md#using-scores-in-decisions), [Appendix — Ten Questions](mcp-governance-risk-framework-v1.0.md#ten-questions-every-security-leader-should-be-able-to-answer) | Consider affected users and downstream communities when approving high-impact MCP use cases. Broader societal impact, accessibility, and discrimination analysis are gaps in v1.0 and must not be inferred from the MCP controls alone. |
+
+---
+
 ## Internal AI Governance Policies
 
 Use this section to map guide controls to your organization's internal AI governance policies. Replace the placeholder rows with your actual policy references.
