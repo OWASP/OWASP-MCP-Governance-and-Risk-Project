@@ -365,6 +365,8 @@ Authorization is optional under the MCP specification. When an HTTP-based MCP se
 - **Exact redirect URI validation**: redirect URIs must match registered values exactly
 - **State verification**: authorization requests must use and validate state parameters
 
+For enterprise deployments, also assess support for the official [Enterprise-Managed Authorization (EMA) extension](https://modelcontextprotocol.io/extensions/auth/enterprise-managed-authorization). EMA allows an organization's identity provider to centrally control MCP server access: the client obtains an Identity Assertion JWT Authorization Grant (ID-JAG) and exchanges it with the MCP authorization server for an access token. Record EMA support, the controlling identity provider, audience/resource binding, and revocation and audit ownership in the inventory. EMA centralizes access decisions but does not replace server-side authorization, least privilege, or logging requirements. See the [EMA announcement](https://blog.modelcontextprotocol.io/posts/enterprise-managed-auth/) for the protocol background and deployment context.
+
 Authorization design must be verified during approval with **evidence and tests**, not assumed from a vendor datasheet. For third-party and open-source MCP servers, this verification is a mandatory step in vendor review. See [Authorization Test Cases](#authorization-test-cases) in the appendix.
 
 For STDIO/local servers, credential handling and [local MCP hardening](#local-mcp-hardening-requirements) apply instead of the HTTP OAuth requirements above.
