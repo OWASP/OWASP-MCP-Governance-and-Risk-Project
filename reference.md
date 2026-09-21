@@ -286,6 +286,7 @@ Tools that support governance evidence collection, third-party review, and conti
 
 | Resource                                | URL                                                                                                                            | Use in governance                           |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| TGWise MCP Server Security Matrix       | [https://tgwise.com/guides/mcp-server-security-matrix/](https://tgwise.com/guides/mcp-server-security-matrix/)               | Authority, scope, and safer-start comparison |
 | mcp-scan (Invariant Labs)               | [https://github.com/invariantlabs-ai/mcp-scan](https://github.com/invariantlabs-ai/mcp-scan)                                   | Tool poisoning / shadowing detection        |
 | MCP Tool Poisoning Experiments          | [https://github.com/invariantlabs-ai/mcp-injection-experiments](https://github.com/invariantlabs-ai/mcp-injection-experiments) | Prompt injection via tool output research   |
 | SecureMCP                               | [https://github.com/makalin/SecureMCP](https://github.com/makalin/SecureMCP)                                                   | Vulnerability and misconfiguration auditing |
