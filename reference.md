@@ -20,7 +20,7 @@ These links appear in the [MCP Governance & Risk Framework v1.0](mcp-governance-
 | ISO/IEC 42001:2023 | https://www.iso.org/standard/81230.html |
 | Awesome MCP Security List | https://github.com/awesome-mcp-security/awesome-mcp-security |
 | Awesome MCP CVE | https://github.com/awesome-mcp-security/awesome-mcp-cve |
-| NIST SP 800-61 Rev. 2 (Incident Response) | https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final |
+| NIST SP 800-61 Rev. 3 (current Incident Response guidance) | https://csrc.nist.gov/pubs/sp/800/61/r3/final |
 
 
 ---
