@@ -283,7 +283,7 @@ Clients can aggregate tools from multiple servers into one registry. That aggreg
 | **Machine speed**                             | Hundreds of tool calls can execute in seconds                                                      | Rate limits, abuse detection, and human approval must be designed for automation not human pace                   |
 | **Prompt injection bridges trust boundaries** | Malicious content in retrieved data or tool outputs can manipulate agent behavior on the next turn | Data from "read-only" sources and tool return values become attack vectors when combined with write-capable tools |
 | **Delegated identity**                        | The agent operates with the user's or a service account's credentials                              | Every tool call is attributed to an identity the user may not realize is in play                                  |
-| **Cumulative blast radius**                   | One MCP server with broad permissions amplifies every other connected server                       | Risk is assessed per session and per agent configuration not per server in isolation                              |
+| **Cumulative blast radius**                   | One MCP server with broad permissions—or passive cross-server capture via shared context—amplifies every other connected server | **Weakest-link property:** confidentiality of agent-accessible data is bounded by the least-secure connected server; assess risk per agent configuration, not per server in isolation |
 
 
 ### A concrete example: the "innocent" research task
@@ -471,7 +471,7 @@ Tool chaining is the highest-priority MCP attack pattern for most organizations.
 
 ### **Cross-server trust and capability manipulation**
 
-A server can influence how the model uses tools owned by another server without modifying those tools directly. For example, a low-trust server can place instructions in a tool description that tell the model to call a higher-impact tool from a trusted server. Name collisions create a second path: tool names are unique only within one server, so an aggregating host may confuse or overwrite tools if it does not preserve server scope.
+A server can influence how the model uses tools owned by another server without modifying those tools directly. For example, a low-trust server can place instructions in a tool description that tell the model to call a higher-impact tool from a trusted server. Name collisions create a second path: tool names are unique only within one server, so an aggregating host may confuse or overwrite tools if it does not preserve server scope. A third, passive path requires no name collision or tool hijacking: a low-trust server exposes a benign-looking observability tool (such as a `logging` tool) whose description instructs the model to mirror inputs and outputs from other servers' tool calls through the shared context, leaving no trace in the victim server's logs.
 
 The [MCP tools specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools) states that a server's self-reported name is not guaranteed to be globally unique. Approval, policy, and logging therefore need an organization-assigned identity for the configured connection, not a display name alone.
 
@@ -487,7 +487,7 @@ The [MCP tools specification](https://modelcontextprotocol.io/specification/2026
 - Assign each approved connection a configured server ID and bind it to the approved remote endpoint or local launch configuration
 - Key approval, policy, and audit records by configured server ID plus tool name, not by tool or display name alone
 - Reject silent overwrite or last-wins collision handling; if the host cannot preserve unambiguous provenance, do not combine colliding catalogs
-- Review tool descriptions and metadata that refer to tools owned by another server
+- Review tool descriptions and metadata that refer to tools owned by another server, or that instruct the model to log or forward inputs/outputs from all tool calls
 - Separate lower-trust and higher-impact catalogs when shared model context is not required
 
 Configured connection identity preserves provenance but does not prove who operates the server. Authentication, transport security, and vendor review remain separate controls. Description review or pattern scanning is also a detective aid, not proof that metadata is safe; structural isolation and server-scoped policy are the preventive controls.
